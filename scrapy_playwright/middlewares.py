@@ -13,7 +13,7 @@ from playwright.sync_api import sync_playwright
 class PlaywrightMiddleware:
     """Scrapy middleware handling the requests using selenium"""
 
-    def __init__(self, proxies_capabilities, headless=True):
+    def __init__(self, proxies_capabilities=None, headless=True):
         p = sync_playwright().start()
         self.browser = p.chromium.launch(headless=False)
         self.driver = self.browser.new_context(viewport={'width': 2640, 'height': 1440})
@@ -24,7 +24,8 @@ class PlaywrightMiddleware:
         headless = crawler.settings.get('HEADLESS')
         proxies_capabilities = crawler.settings.get('PROXIES')
         middleware = cls(
-            headless=headless
+            headless=headless,
+            proxies_capabilities=proxies_capabilities
         )
 
         crawler.signals.connect(middleware.spider_closed, signals.spider_closed)
