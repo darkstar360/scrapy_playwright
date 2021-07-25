@@ -47,7 +47,7 @@ class PlaywrightMiddleware:
         request.meta.update({'driver': self.driver, 'browser': self.browser, 'page': self.page})
 
         return HtmlResponse(
-            self.driver.current_url,
+            self.page.url,
             body=body,
             encoding='utf-8',
             request=request
