@@ -38,8 +38,8 @@ class PlaywrightMiddleware:
         if not isinstance(request, PlaywrightRequest):
             return None
 
-        self.page.goto(request.url)
-        self.page.wait_for_load_state("networkidle")
+        self.page.goto(request.url, wait_until="domcontentloaded")
+        # self.page.wait_for_load_state("networkidle")
 
         body = str.encode(self.page.content())
 

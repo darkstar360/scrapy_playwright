@@ -32,7 +32,7 @@ setup(
     # packages=find_packages(),
     install_requires=['scrapy>=1.0.0', 'playwright', 'wheel>=0.36.2'],
     name='scrapy_playwright',
-    version='0.0.3s',
+    version='0.0.35',
     description='Scrapy with playwright',
     url='git@github.com:https://github.com/darkstar360/scrapy_playwright',
     author='darkstar',
