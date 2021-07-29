@@ -15,7 +15,7 @@ class PlaywrightMiddleware:
 
     def __init__(self, proxies_capabilities=None, headless=True):
         p = sync_playwright().start()
-        self.browser = p.chromium.launch(headless=False)
+        self.browser = p.chromium.launch(headless=headless)
         if proxies_capabilities is not None:
             if len(proxies_capabilities) > 0:
                 proxy = random.choice(proxies_capabilities)
