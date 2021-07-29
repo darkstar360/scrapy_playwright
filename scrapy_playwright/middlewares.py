@@ -16,7 +16,23 @@ class PlaywrightMiddleware:
     def __init__(self, proxies_capabilities=None, headless=True):
         p = sync_playwright().start()
         self.browser = p.chromium.launch(headless=False)
-        self.driver = self.browser.new_context(viewport={'width': 2640, 'height': 1440})
+        if len(proxies_capabilities) > 0 and not None:
+            proxy = random.choice(proxies_capabilities)
+            pr = proxy.split('@')
+            if len(pr) > 1:
+                proxy_server = pr[0]
+                pr_auth = pr[1].split(':')
+                proxy_user = pr_auth[0]
+                proxy_pass = pr_auth[1]
+                self.driver = self.browser.new_context(viewport={'width': 2640, 'height': 1440},
+                                                       proxy={'server': proxy_server, 'username': proxy_user,
+                                                              'password': proxy_pass})
+            else:
+                proxy_server = pr[0]
+                self.driver = self.browser.new_context(viewport={'width': 2640, 'height': 1440},
+                                                       proxy={'server': proxy_server})
+        else:
+            self.driver = self.browser.new_context(viewport={'width': 2640, 'height': 1440})
         self.page = self.driver.new_page()
 
     @classmethod
