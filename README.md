@@ -1,4 +1,4 @@
-**scrapy playwright**
+**scrapy playwright**\
 **Scrapy Middleware for playwright**\
 **Installation**\
 `pip install git+https://github.com/darkstar360/scrapy_playwright`
