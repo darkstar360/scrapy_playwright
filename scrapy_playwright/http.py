@@ -6,7 +6,7 @@ from scrapy import Request
 class PlaywrightRequest(Request):
     """Scrapy ``Request`` subclass providing additional arguments"""
 
-    def __init__(self, wait_time=None, wait_until=None, screenshot=False, script=None, *args, **kwargs):
+    def __init__(self, browser=None, wait_time=None, wait_until=None, screenshot=False, script=None, *args, **kwargs):
         """Initialize a new selenium request
 
         Parameters
@@ -28,5 +28,6 @@ class PlaywrightRequest(Request):
         self.wait_until = wait_until
         self.screenshot = screenshot
         self.script = script
+        self.browser = browser
 
         super().__init__(*args, **kwargs)

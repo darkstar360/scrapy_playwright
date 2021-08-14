@@ -1,4 +1,4 @@
-"""This module contains the ``SeleniumMiddleware`` scrapy middleware"""
+"""This module contains the ``PlaywrightMiddleware`` scrapy middleware"""
 
 from importlib import import_module
 
@@ -14,11 +14,32 @@ class PlaywrightMiddleware:
     """Scrapy middleware handling the requests using selenium"""
 
     def __init__(self, proxies_capabilities=None, headless=True):
-        p = sync_playwright().start()
-        self.browser = p.chromium.launch(headless=headless)
-        if proxies_capabilities is not None:
-            if len(proxies_capabilities) > 0:
-                proxy = random.choice(proxies_capabilities)
+        self.proxies_capabilities = proxies_capabilities
+        self.headless = headless
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        headless = crawler.settings.get('HEADLESS')
+        proxies_capabilities = crawler.settings.get('PROXIES')
+        middleware = cls(
+            headless=headless,
+            proxies_capabilities=proxies_capabilities,
+        )
+
+        crawler.signals.connect(middleware.spider_closed, signals.spider_closed)
+
+        return middleware
+
+    def process_request(self, request, spider):
+        """Process a request using the selenium driver if applicable"""
+        if request.browser is None:
+            p = sync_playwright().start()
+            self.browser = p.chromium.launch(headless=self.headless)
+        else:
+            self.browser = request.browser
+        if self.proxies_capabilities is not None:
+            if len(self.proxies_capabilities) > 0:
+                proxy = random.choice(self.proxies_capabilities)
                 pr = proxy.split('@')
                 if len(pr) > 1:
                     proxy_server = pr[0]
@@ -37,22 +58,6 @@ class PlaywrightMiddleware:
         else:
             self.driver = self.browser.new_context(viewport={'width': 2640, 'height': 1440})
         self.page = self.driver.new_page()
-
-    @classmethod
-    def from_crawler(cls, crawler):
-        headless = crawler.settings.get('HEADLESS')
-        proxies_capabilities = crawler.settings.get('PROXIES')
-        middleware = cls(
-            headless=headless,
-            proxies_capabilities=proxies_capabilities
-        )
-
-        crawler.signals.connect(middleware.spider_closed, signals.spider_closed)
-
-        return middleware
-
-    def process_request(self, request, spider):
-        """Process a request using the selenium driver if applicable"""
 
         if not isinstance(request, PlaywrightRequest):
             return None
