@@ -11,7 +11,7 @@ from playwright.sync_api import sync_playwright
 
 
 class PlaywrightMiddleware:
-    """Scrapy middleware handling the requests using selenium"""
+    """Scrapy middleware handling the requests using playwright"""
 
     def __init__(self, proxies_capabilities=None, headless=True):
         self.proxies_capabilities = proxies_capabilities

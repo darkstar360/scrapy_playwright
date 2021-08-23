@@ -35,8 +35,7 @@ setup(
     version='0.0.5',
     description='Scrapy with playwright',
     url='git@github.com:https://github.com/darkstar360/scrapy_playwright',
-    author='darkstar',
-    # author_email='raphael.schubert@digitalbankscorp.com',
+    author='darkstar360',
     license='unlicense',
     packages=['scrapy_playwright'],
     zip_safe=False
