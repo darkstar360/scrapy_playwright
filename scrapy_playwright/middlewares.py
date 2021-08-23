@@ -48,22 +48,22 @@ class PlaywrightMiddleware:
                     pr_auth = pr[1].split(':')
                     proxy_user = pr_auth[0]
                     proxy_pass = pr_auth[1]
-                    self.driver = self.browser.new_context(viewport={'width': 2640, 'height': 1440},
-                                                           user_agent=request.user_agent,
-                                                           proxy={'server': proxy_server, 'username': proxy_user,
-                                                                  'password': proxy_pass})
+                    self.context = self.browser.new_context(viewport={'width': 2640, 'height': 1440},
+                                                            user_agent=request.user_agent,
+                                                            proxy={'server': proxy_server, 'username': proxy_user,
+                                                                   'password': proxy_pass})
                 else:
                     proxy_server = pr[0]
-                    self.driver = self.browser.new_context(viewport={'width': 2640, 'height': 1440},
-                                                           user_agent=request.user_agent,
-                                                           proxy={'server': proxy_server})
+                    self.context = self.browser.new_context(viewport={'width': 2640, 'height': 1440},
+                                                            user_agent=request.user_agent,
+                                                            proxy={'server': proxy_server})
             else:
-                self.driver = self.browser.new_context(viewport={'width': 2640, 'height': 1440},
-                                                       user_agent=request.user_agent, )
+                self.context = self.browser.new_context(viewport={'width': 2640, 'height': 1440},
+                                                        user_agent=request.user_agent, )
         else:
-            self.driver = self.browser.new_context(viewport={'width': 2640, 'height': 1440},
-                                                   user_agent=request.user_agent, )
-        self.page = self.driver.new_page()
+            self.context = self.browser.new_context(viewport={'width': 2640, 'height': 1440},
+                                                    user_agent=request.user_agent, )
+        self.page = self.context.new_page()
 
         if not isinstance(request, PlaywrightRequest):
             return None
@@ -75,7 +75,7 @@ class PlaywrightMiddleware:
         body = str.encode(self.page.content())
 
         # Expose the driver via the "meta" attribute
-        request.meta.update({'driver': self.driver, 'browser': self.browser, 'page': self.page})
+        request.meta.update({'context': self.context, 'browser': self.browser, 'page': self.page})
 
         return HtmlResponse(
             self.page.url,
