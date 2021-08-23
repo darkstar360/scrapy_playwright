@@ -31,7 +31,7 @@ class PlaywrightMiddleware:
         return middleware
 
     def process_request(self, request, spider):
-        """Process a request using the selenium driver if applicable"""
+        """Process a request using the playwright if applicable"""
         if request.browser is None:
             p = sync_playwright().start()
             self.browser = p.chromium.launch(headless=self.headless)
