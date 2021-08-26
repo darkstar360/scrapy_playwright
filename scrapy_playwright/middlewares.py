@@ -32,6 +32,8 @@ class PlaywrightMiddleware:
 
     def process_request(self, request, spider):
         """Process a request using the playwright if applicable"""
+        if not isinstance(request, PlaywrightRequest):
+            return None
         if request.browser is None:
             p = sync_playwright().start()
             self.browser = p.chromium.launch(headless=self.headless)
@@ -65,8 +67,6 @@ class PlaywrightMiddleware:
                                                     user_agent=request.user_agent, )
         self.page = self.context.new_page()
 
-        if not isinstance(request, PlaywrightRequest):
-            return None
         if request.timeout:
             self.page.set_default_timeout(request.timeout)
         self.page.goto(request.url, wait_until="domcontentloaded")
