@@ -34,37 +34,41 @@ class PlaywrightMiddleware:
         """Process a request using the playwright if applicable"""
         if not isinstance(request, PlaywrightRequest):
             return None
+        if request.user_agent is None:
+            request.user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36'
         if request.browser is None:
             p = sync_playwright().start()
             self.browser = p.chromium.launch(headless=self.headless)
         else:
             self.browser = request.browser
-        if request.user_agent is None:
-            request.user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36'
-        if self.proxies_capabilities is not None:
-            if len(self.proxies_capabilities) > 0:
-                proxy = random.choice(self.proxies_capabilities)
-                pr = proxy.split('@')
-                if len(pr) > 1:
-                    proxy_server = pr[0]
-                    pr_auth = pr[1].split(':')
-                    proxy_user = pr_auth[0]
-                    proxy_pass = pr_auth[1]
-                    self.context = self.browser.new_context(viewport={'width': 2640, 'height': 1440},
-                                                            user_agent=request.user_agent,
-                                                            proxy={'server': proxy_server, 'username': proxy_user,
-                                                                   'password': proxy_pass})
+
+        if request.context is not None:
+            self.context = request.context
+        else:
+            if self.proxies_capabilities is not None:
+                if len(self.proxies_capabilities) > 0:
+                    proxy = random.choice(self.proxies_capabilities)
+                    pr = proxy.split('@')
+                    if len(pr) > 1:
+                        proxy_server = pr[0]
+                        pr_auth = pr[1].split(':')
+                        proxy_user = pr_auth[0]
+                        proxy_pass = pr_auth[1]
+                        self.context = self.browser.new_context(viewport={'width': 2640, 'height': 1440},
+                                                                user_agent=request.user_agent,
+                                                                proxy={'server': proxy_server, 'username': proxy_user,
+                                                                       'password': proxy_pass})
+                    else:
+                        proxy_server = pr[0]
+                        self.context = self.browser.new_context(viewport={'width': 2640, 'height': 1440},
+                                                                user_agent=request.user_agent,
+                                                                proxy={'server': proxy_server})
                 else:
-                    proxy_server = pr[0]
                     self.context = self.browser.new_context(viewport={'width': 2640, 'height': 1440},
-                                                            user_agent=request.user_agent,
-                                                            proxy={'server': proxy_server})
+                                                            user_agent=request.user_agent, )
             else:
                 self.context = self.browser.new_context(viewport={'width': 2640, 'height': 1440},
                                                         user_agent=request.user_agent, )
-        else:
-            self.context = self.browser.new_context(viewport={'width': 2640, 'height': 1440},
-                                                    user_agent=request.user_agent, )
         self.page = self.context.new_page()
 
         if request.timeout:
